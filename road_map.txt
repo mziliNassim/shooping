@@ -1,0 +1,5 @@
+**_ add favorite -- remouve favorite  _**
+
+**_ card delete btn _**
+
+**_ Create / Edite / Remouve -- Products _**

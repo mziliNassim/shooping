@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- meta part -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- page title -->
+    <title>Products Info</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
+  </head>
+  <body>
+    <nav class="container">
+      <!-- logo -->
+      <div class="logo">
+        <a href="./index.html">SHOPPING</a>
+      </div>
+
+      <!-- Details -->
+      <div class="user_eara">
+        <button class="btn login">login</button>
+        <div class="user">
+          <span class="userProfile"></span>
+          <ul class="user-options">
+            <li><a href="./account.html">Account</a></li>
+            <li><a href="./favorite.html">Favorite</a></li>
+            <li class="logout">logout <i class="fas fa-lock"></i></li>
+          </ul>
+        </div>
+        <div class="card-icon">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="notification"></span>
+          <ul class="card-items">
+            <li class="card-items__item">
+              <a href="./card.html">Show all my Products</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="account">
+      <div class="container">
+        <div class="user_info">
+          <!-- category -->
+          <ul class="user_category">
+            <li>Personal Info</li>
+            <li class="active">add items</li>
+            <li>remouve item</li>
+          </ul>
+
+          <!-- content -->
+          <div class="add_product">
+            <form novalidate>
+              <input type="file" name="imgFile" class="imgFile" required />
+              <input
+                type="text"
+                placeholder="Product title"
+                class="cp_title"
+                required />
+              <input
+                type="text"
+                placeholder="Product description"
+                class="cp_desc"
+                required />
+              <input
+                type="number"
+                placeholder="Product Price"
+                class="cp_price"
+                required />
+
+              <select name="category" id="category">
+                <option value="" hidden selected disabled>
+                  select category
+                </option>
+                <option value="men">men</option>
+                <option value="women">women</option>
+                <option value="baby">babys</option>
+              </select>
+              <div class="_btns">
+                <button class="btn reset" >reset</button>
+                <button class="btn create">create</button>
+              </div>
+            </form>
+
+            <div class="product_create items">
+              <div class="item showtransition">
+                <img src="" alt="" class="item-img" />
+                <div class="item-info">
+                  <h3 class="item-info-title"><!--title--></h3>
+                  <p class="item-info-desc"><!--desc--></p>
+                </div>
+                <div class="item-options">
+                  <!-- <span>300 Dh</span>
+                  <div class="btns">
+                    <button class="btn item-options-toCard">Add to card</button>
+                    <button class="btn item-options-toFavorit">
+                      <i class="fas fa-heart"></i>
+                    </button>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- js -->
+    <script src="./assets/js/user.js"></script>
+    <script src="./assets/js/account.js"></script>
+  </body>
+</html>

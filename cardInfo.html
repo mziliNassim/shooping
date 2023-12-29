@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- meta part -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- page title -->
+    <title>Products Info</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
+  </head>
+  <body>
+    <nav class="container">
+      <!-- logo -->
+      <div class="logo">
+        <a href="./index.html">SHOPPING</a>
+      </div>
+
+      <!-- Details -->
+      <div class="user_eara">
+        <button class="btn login">login</button>
+        <div class="user">
+          <span class="userProfile"></span>
+          <ul class="user-options">
+            <li><a href="./account.html">Account</a></li>
+            <li><a href="./favorite.html">Favorite</a></li>
+            <li class="logout">logout <i class="fas fa-lock"></i></li>
+          </ul>
+        </div>
+        <div class="card-icon">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="notification"></span>
+          <ul class="card-items">
+            <li class="card-items__item">
+              <a href="./card.html">Show all my Products</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Products Grid -->
+    <section id="info">
+      <div class="container">
+        <div class="wrapper">
+          <!-- <div class="itemInfo">...</div> -->
+        </div>
+      </div>
+    </section>
+
+    <!-- js -->
+    <script src="./assets/js/user.js"></script>
+    <script>
+      let productsFromDB = JSON.parse(localStorage.getItem("ProductsDB")),
+        productID = localStorage.getItem("idClickdItem"),
+        divDom = document.querySelector(".wrapper"),
+        notification = document.querySelector(".notification");
+
+      // check if user login
+      function isUserLogin() {
+        if (localStorage.getItem("username")) {
+          return true;
+        }
+        return false;
+      }
+;
+
+      // set info of item selected with id from localstorage
+      let itemDB = productsFromDB.find((item) => item.id == productID);
+      let setItemInfo;
+      (setItemInfo = function (item) {
+        divDom.innerHTML = `
+          <div class="itemInfo">
+              <img src="${item.imgUrl}" alt="${item.title}" />
+
+              <div class="details">
+                  <h1>${item.title}</h1>
+                  <h3>
+                      ${item.desc}
+                  </h3>
+
+                  <div class="tails">
+                      tails :
+                      <span>S</span> <span>M</span> <span>L</span> <span>XL</span>
+                  </div>
+
+                  <div class="option">
+                      <span class="price"> price : ${item.price} Dh</span>
+                      <div class="btns">
+                      <button class="btn item-options-toCard" onclick="addItemToCard(${item.id})">Add to card</button>
+                      <button class="btn item-options-toFavorit ${item.favorite}" onclick="addItemToFavorite(${item.id})">
+                          <i class="fas fa-heart"></i>
+                      </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        `;
+      })(itemDB);
+
+      // add item to card
+      let itemsInCard = localStorage.getItem("productInCard")
+        ? JSON.parse(localStorage.getItem("productInCard"))
+        : [];
+      function addItemToCard(id) {
+        let clickedItem = productsFromDB.find((item) => item.id === id),
+          cardItemsliste = document.querySelectorAll(".card-items li");
+        if (isUserLogin()) {
+          itemsInCard = [...itemsInCard, clickedItem];
+          localStorage.setItem("productInCard", JSON.stringify(itemsInCard));
+          cardItems.innerHTML += `
+                  <li class="card-items__item">
+                      <div class="card-items__img">
+                          <img src="${clickedItem.imgUrl}" alt="${clickedItem.title}">
+                      </div>
+                      <div class="card-items__info">
+                          <h4>${clickedItem.title}</h4>
+                          <p>${clickedItem.desc}</p>
+                      </div>
+                      <div class="card-items__actions">
+                          <h6><span>(X5) </span>  ${clickedItem.price} Dh</h6>
+                          <button class="btn deletBtn">Delete</button>
+                      </div>
+                  </li>
+              `;
+          notification.style.display = "block";
+          notification.innerHTML = cardItemsliste.length;
+        } else {
+          window.location = "./assets/components/register.html";
+        }
+      }
+
+      // Add to favorite
+      let itemListeFavorite = localStorage.getItem("FavoritDB")
+        ? localStorage.getItem("FavoritDB")
+        : [];
+      itemListeFavorite = JSON.parse(itemListeFavorite);
+
+      let hartIcon = document.querySelector(".item-options-toFavorit");
+      function addItemToFavorite(id) {
+        if (isUserLogin()) {
+          // get clicked item from productDB
+          let clickedItem = productsFromDB.find((item) => item.id === id); // {clicked item}
+
+          // index of clicked Item in 'ProductDB'
+          let indexPR = productsFromDB.findIndex((ele) => ele.id === id);
+
+          // chek if cklicked item exist in favorit array
+          let chekedFavorite = itemListeFavorite.find(
+            (item) => item.id === clickedItem.id
+          );
+          if (chekedFavorite) {
+            // #chekedFavorite exite in favorite liste
+            let indexFav = itemListeFavorite.findIndex(
+              (item) => item.id === chekedFavorite.id
+            );
+            itemListeFavorite[indexFav].favorite = "";
+            itemListeFavorite.splice(indexFav, 1);
+
+            // change favorite value in 'ProductDB'
+            productsFromDB[indexPR].favorite = "";
+          } else {
+            // #chekedFavorite don't exite in favorite liste
+            clickedItem.favorite = "active";
+            itemListeFavorite = [...itemListeFavorite, clickedItem];
+
+            // change favorite value in 'ProductDB'
+            productsFromDB[indexPR].favorite = "active";
+          }
+
+          localStorage.setItem("FavoritDB", JSON.stringify(itemListeFavorite));
+          localStorage.setItem("ProductsDB", JSON.stringify(productsFromDB));
+          setItemInfo(productsFromDB[indexPR]);
+        }
+      }
+    </script>
+  </body>
+</html>

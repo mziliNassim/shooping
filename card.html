@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- meta part -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- page title -->
+    <title>My Products</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
+  </head>
+  <body>
+    <nav class="container">
+      <!-- logo -->
+      <div class="logo">
+        <a href="./index.html">SHOPPING</a>
+      </div>
+
+      <!-- searsh -->
+      <!-- <div class="form">
+        <input
+          type="text"
+          name="shearch"
+          id="shearch"
+          placeholder="Search product..." />
+        <i class="fab fa-searchengin"></i>
+      </div> -->
+
+      <!-- Details -->
+      <div class="user_eara">
+        <button class="btn login">login</button>
+        <div class="user">
+          <span class="userProfile"></span>
+          <ul class="user-options">
+            <li><a href="./account.html">Account</a></li>
+            <li><a href="./favorite.html">Favorite</a></li>
+            <li class="logout">logout <i class="fas fa-lock"></i></li>
+          </ul>
+        </div>
+        <div class="card-icon">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="notification"></span>
+          <ul class="card-items">
+            <li class="card-items__item">
+              <a href="./card.html">Show all my Products</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Products Grid -->
+    <section id="products">
+      <div class="container">
+        <div class="wrapper">
+          <div class="card-head">
+            <div class="card-header">
+              <p>Your Shooping products</p>
+            </div>
+            <ul class="category">
+              <li class="active" onclick="matchCategory('all')">all</li>
+              <li onclick="matchCategory('men')">men</li>
+              <li onclick="matchCategory('women')">women</li>
+              <li onclick="matchCategory('babys')">babys</li>
+            </ul>
+          </div>
+          <div class="items">
+            <!-- <div class="item"></div> -->
+          </div>
+        </div>
+      </div>
+      <div class="noProducts">
+        <p>No product for now <a href="./index.html">Show All Procucts</a> !</p>
+      </div>
+    </section>
+
+    <!-- js -->
+    <script src="./assets/js/user.js"></script>
+    <script>
+      // is user login
+      if (!localStorage.getItem("username")) {
+        window.location = "./login.html";
+      }
+
+      // DB
+      let productCard = JSON.parse(localStorage.getItem("productInCard"));
+      // DOM  
+      let itemsCardBox = document.querySelector(".items"),
+        noProducts = document.querySelector(".noProducts"),
+        notification = document.querySelector(".notification"),
+        categoryDOM = document.querySelectorAll(".category li");
+
+      // function loop Product in card && inset in card.html
+      let setCardProductsUI;
+      (setCardProductsUI = function (allProducts = []) {
+        itemsCardBox.innerHTML = "";
+        let productInCard =
+          allProducts || JSON.parse(localStorage.getItem("productInCard"));
+
+        if (!productInCard || productInCard.length === 0) {
+          noProducts.style.display = "block";
+        } else noProducts.style.display = "none";
+
+        let cardProductsUI = productInCard.map((item) => {
+          return `
+              <div class="item">
+                  <img src="${item.imgUrl}" alt="${item.title}" class="item-img" />
+                  <div class="item-info">
+                      <h3 class="item-info-title">${item.title}</h3>
+                      <p class="item-info-desc">${item.desc}</p>
+                  </div>
+                  <div class="item-options">
+                      <span>(x${item.count}) ${item.price} Dh</span>
+                      <div class="btns">
+                        <button
+                          class="btn item-options-toCard"
+                          onclick="remouveFromCard(${item.id})">
+                          Remouve from card
+                        </button>
+                        <button
+                          class="btn item-options-toFavorit ${item.favorite}"
+                          onclick="addItemToFavorite(${item.id})">
+                          <i class='fas fa-heart'></i>
+                        </button>
+                      </div>
+                  </div>
+              </div>
+          `;
+        });
+        itemsCardBox.innerHTML += cardProductsUI.join("");
+      })(JSON.parse(localStorage.getItem("productInCard")));
+
+      // function remouve product from card.html
+      function remouveFromCard(id) {
+        if (localStorage.getItem("productInCard")) {
+          // item in card from 'DB'
+          itemsInCard = JSON.parse(localStorage.getItem("productInCard"));
+
+          // remouve clicked item in card 'DB'
+          let restItems = itemsInCard.filter((item) => item.id !== id);
+          localStorage.setItem("productInCard", JSON.stringify(restItems));
+
+          // set Exist Product in card 'DB' to card 'UI'
+          setExistProduct(JSON.parse(localStorage.getItem("productInCard")));
+
+          // set rest item poduct UI
+          setCardProductsUI(restItems);
+
+          // notification
+          notification.innerHTML = itemsInCard.length - 1;
+
+          // 7al  mo2a9at
+          /* window.location = 'card.html' */
+        }
+      }
+
+      // check if items exist in localstorage && addit to card
+      let itemsInCard = localStorage.getItem("productInCard")
+        ? JSON.parse(localStorage.getItem("productInCard"))
+        : [];
+      let setExistProduct;
+      (setExistProduct = function (items = []) {
+        cardItems.innerHTML = "";
+        if (items) {
+          items.map((item) => {
+            cardItems.innerHTML += `
+                  <li class="card-items__item">
+                      <div class="card-items__img">
+                          <img src="${item.imgUrl}" alt="${item.title}">
+                      </div>
+
+                      <div class="card-items__info">
+                          <h4>${item.title}</h4>
+                          <p>${item.desc}</p>
+                      </div>
+
+                      <div class="card-items__actions">
+                          <h6><span>(X5) </span>  ${item.price} Dh</h6>
+                          <button class="btn deletBtn">Delete</button>
+                      </div>
+                  </li>
+              `;
+            notification.innerHTML = itemsInCard.length;
+            notification.style.display = "block";
+          });
+        }
+      })(itemsInCard);
+
+      // Add to favorite
+      let itemListeFavorite = localStorage.getItem("FavoritDB")
+        ? localStorage.getItem("FavoritDB")
+        : "[]";
+      let hartIcon = document.querySelectorAll(".item-options-toFavorit");
+      itemListeFavorite = JSON.parse(itemListeFavorite);
+      function addItemToFavorite(id) {
+        let productsFromDB = JSON.parse(localStorage.getItem("ProductsDB"));
+
+        // get clicked item from productsDB
+        let clickedItem = productsFromDB.find((item) => item.id === id); // {clicked item}
+
+        // index of clicked Item in 'itemsInCard_DB'
+        let indexIC = itemsInCard.findIndex((ele) => ele.id === id);
+        
+        // index of clicked Item in 'ProductsDB'
+        let indexPR = productsFromDB.findIndex((ele) => ele.id === id);
+
+        // chek if cklicked item exist in favorit array
+        let isInFavorite = itemListeFavorite.some(
+          (item) => item.id === clickedItem.id
+        );
+        if (isInFavorite) {
+          // change favorite value in 'itemListeFavorite_DB'
+          let indexFav = itemListeFavorite.findIndex((item) => item.id === id);
+          itemListeFavorite[indexFav].favorite = "";
+          itemListeFavorite.splice(indexFav, 1);
+
+          // change favorite value in 'itemsInCard_DB'
+          itemsInCard[indexIC].favorite = "";
+
+          // change favorite value in 'ProductsDB'
+          productsFromDB[indexPR].favorite = "";
+        } else {
+          // change favorite value in 'itemListeFavorite_DB'
+          clickedItem.favorite = "active";
+          itemListeFavorite = [...itemListeFavorite, clickedItem];
+          
+          // change favorite value in 'itemsInCard_DB'
+          itemsInCard[indexIC].favorite = "active";
+
+          // change favorite value in 'ProductsDB'
+          productsFromDB[indexPR].favorite = "active";
+        }
+
+        localStorage.setItem("FavoritDB", JSON.stringify(itemListeFavorite));
+        localStorage.setItem("ProductsDB", JSON.stringify(productsFromDB));
+        setCardProductsUI(itemsInCard);
+      }
+
+      // category
+      function matchCategory(key) {
+        if (key !== "all") {
+          let itemMatchCategory;
+          categoryDOM.forEach((ele) => ele.classList.remove("active"));
+
+          itemMatchCategory = productCard.filter(
+            (items) => items.category === key
+          );
+          itemsCardBox.innerHTML = "";
+          setCardProductsUI(itemMatchCategory);
+        } else setCardProductsUI(itemsInCard);
+      }
+    </script>
+  </body>
+</html>

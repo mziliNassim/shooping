@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- meta part -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- page title -->
+    <title>shopping HEAR</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
+  </head>
+  <body>
+    <nav class="container">
+      <!-- logo -->
+      <div class="logo">
+        <a href="./index.html">SHOPPING</a>
+      </div>
+
+      <!-- searsh -->
+      <!-- <div class="form">
+        <input
+          type="text"
+          name="shearch"
+          id="shearch"
+          placeholder="Search product..." />
+        <i class="fab fa-searchengin"></i>
+      </div> -->
+
+      <!-- Details -->
+      <div class="user_eara">
+        <button class="btn login">login</button>
+        <div class="user">
+          <span class="userProfile"></span>
+          <ul class="user-options">
+            <li><a href="./account.html">Account</a></li>
+            <li><a href="./favorite.html">Favorite</a></li>
+            <li class="logout">logout <i class="fas fa-lock"></i></li>
+          </ul>
+        </div>
+        <div class="card-icon">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="notification"></span>
+          <ul class="card-items">
+            <li class="card-items__item">
+              <a href="./card.html">Show all my Products</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Products Grid -->
+    <section id="products">
+      <div class="container">
+        <div class="wrapper">
+          <div class="card-head">
+            <div class="card-header">
+              <p>Favorits products</p>
+            </div>
+            <ul class="category">
+              <li class="active" onclick="matchCategory('all')">all</li>
+              <li onclick="matchCategory('men')">men</li>
+              <li onclick="matchCategory('women')">women</li>
+              <li onclick="matchCategory('babys')">babys</li>
+            </ul>
+          </div>
+          <div class="items">
+            <!-- <div class="item">...</div> -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- js -->
+    <script src="./assets/js/user.js"></script>
+    <script>
+      // is user loging!!
+      if (!localStorage.getItem("username")) {
+        window.location = "./login.html";
+      }
+
+      // DOM
+      let itemsDOM = document.querySelector(".items"),
+        notification = document.querySelector(".notification");
+      // BD
+      let ProductsDB = JSON.parse(localStorage.getItem("ProductsDB")),
+        FavoritDB = JSON.parse(localStorage.getItem("FavoritDB"));
+
+      // set favorite product UI from favorite list in 'DB'
+      let setItemFavorite;
+      (setItemFavorite = function (favListe) {
+        itemsDOM.innerHTML = "";
+        let favUI = favListe.map((item) => {
+          return `
+                  <div class='item'>
+                      <a onclick='saveItemClicked(${item.id})'>
+                          <img
+                            src="${item.imgUrl}"
+                            alt="${item.title}"
+                            class="item-img"
+                          />
+
+                          <div class="item-info">
+                              <h3 class="item-info-title">${item.title.toUpperCase()}</h3>
+                              <p class="item-info-desc">${item.desc}</p>
+                          </div>
+                      </a>
+                      <div class="item-options">
+                          <span>${item.price} Dh</span>
+                          <div class="btns">
+                          <button
+                            class="btn item-options-toCard"
+                            onclick="addItemToCard(${item.id})">
+                            Add to card
+                          </button>
+                          <button
+                            class="btn item-options-toFavorit active"
+                            onclick="remouveItemFavorite(${item.id})">
+                            <i class='fas fa-heart'></i>
+                          </button>
+                          </div>
+                      </div>
+                  </div>
+                `;
+        });
+        itemsDOM.innerHTML += favUI.join("");
+      })(JSON.parse(localStorage.getItem("FavoritDB")));
+
+      // Remouve favorite product UI from favorite list in 'DB'
+      function remouveItemFavorite(id) {
+        // fiter favorite liste 'DB' remouve clicked item
+        let favoriteDB = JSON.parse(localStorage.getItem("FavoritDB"));
+
+        // remouve favorite = 'active' in favorite liste 'DB'
+        favoriteDB.map((item) => {
+          if (item.id === id) {
+            item.favorite = "";
+          }
+        });
+        // remouve favorite = 'active' in Products 'DB'
+        ProductsDB.map((item) => {
+          if (item.id === id) {
+            item.favorite = "";
+          }
+        });
+
+        // delete clicked item from 'favoriteDB'
+        favoriteDB = favoriteDB.filter((ele) => ele.id !== id);
+
+        // save changes in 'DB'
+        localStorage.setItem("FavoritDB", JSON.stringify(favoriteDB));
+        localStorage.setItem("ProductsDB", JSON.stringify(ProductsDB));
+
+        // set UI items
+        setItemFavorite(JSON.parse(localStorage.getItem("FavoritDB")));
+      }
+
+      // add items from localstorage to card if exist
+      let itemsInCard = localStorage.getItem("productInCard")
+        ? JSON.parse(localStorage.getItem("productInCard"))
+        : [];
+      let setExistProduct;
+      (setExistProduct = function () {
+        if (itemsInCard) {
+          itemsInCard.map((item) => {
+            cardItems.innerHTML += `
+        <li class="card-items__item">
+            <div class="card-items__img">
+                <img src="${item.imgUrl}" alt="${item.title}">
+            </div>
+
+            <div class="card-items__info">
+                <h4>${item.title}</h4>
+                <p>${item.desc}</p>
+            </div>
+
+            <div class="card-items__actions">
+                <h6><span>(X${item.count}) </span>  ${item.price} Dh</h6>
+                <button class="btn deletBtn">Delete</button>
+            </div>
+        </li>
+      `;
+            notification.innerHTML = itemsInCard.length;
+            notification.style.display = "block";
+          });
+        }
+      })();
+
+      // add item to card
+      function addItemToCard(id) {
+        let clickedItem = ProductsDB.find((item) => item.id === id);
+
+        // is clicked item alredy exist in card 'DB'
+        let isItemInCard = itemsInCard.some(
+          (item) => item.id == clickedItem.id
+        );
+        if (isItemInCard) {
+          // clicked item exist in card 'DB'
+          itemsInCard = itemsInCard.map((item) => {
+            if (item.id === clickedItem.id) item.count += 1;
+            return item;
+          });
+        } else {
+          // clicked item don't exist in card 'DB'
+          itemsInCard.push(clickedItem);
+        }
+
+        // set Exist Product in card 'DB' to card 'UI'
+        cardItems.innerHTML = "";
+        itemsInCard.forEach((item) => {
+          cardItems.innerHTML += `
+              <li class="card-items__item">
+                <div class="card-items__img">
+                  <img src="${item.imgUrl}" alt="${item.title}">
+                </div>
+                <div class="card-items__info">
+                  <h4>${item.title}</h4>
+                  <p>${item.desc}</p>
+                </div>
+                <div class="card-items__actions">
+                  <h6><span>(X${item.count}) </span>  ${item.price} Dh</h6>
+                  <button class="btn deletBtn">Delete</button>
+                </div>
+              </li>
+            `;
+        });
+        cardItems.innerHTML += `
+            <li class="card-items__item">
+              <a href="./card.html">Show all my Products</a>
+            </li>
+          `;
+
+        // save card in 'DB'
+        localStorage.setItem("productInCard", JSON.stringify(itemsInCard));
+
+        // notification
+        notification.style.display = "block";
+        notification.innerHTML = itemsInCard.length;
+      }
+
+      // category
+      let categoryDOM = document.querySelectorAll(".category li");
+      let itemMatchCategory;
+      categoryDOM.forEach((cat) => {
+        cat.addEventListener("click", () => {
+          categoryDOM.forEach((ele) => ele.classList.remove("active"));
+          cat.classList.add("active");
+          if (cat.innerHTML !== "all") {
+            itemMatchCategory = FavoritDB.filter(
+              (items) => cat.innerHTML === items.category
+            );
+            setItemFavorite(itemMatchCategory);
+          } else setItemFavorite(FavoritDB);
+        });
+      });
+    </script>
+  </body>
+</html>

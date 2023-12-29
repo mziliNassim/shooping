@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- meta part -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- page title -->
+    <title>login_shopping</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
+  </head>
+  <body>
+    <nav class="container">
+      <!-- logo -->
+      <div class="logo">
+        <a href="./index.html">SHOPPING</a>
+      </div>
+    </nav>
+
+    <!-- Login / REGESTER-->
+    <section id="sign">
+      <div class="wrapper active-popup">
+        <!-- LOIGN -->
+        <div class="form-box login active">
+          <h2>Login</h2>
+          <form novalidate>
+            <p class="login_alert">Please Register!</p>
+            <div class="input-box">
+              <span class="icon">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input type="text" id="usernameLogin" required />
+              <label>Username / Email</label>
+            </div>
+            <div class="input-box">
+              <span class="icon">
+                <i class="fas fa-lock"></i>
+                <!-- <i class="fas fa-lock-open"></i> -->
+              </span>
+              <input type="password" id="passwordLogin" required />
+              <label>Password</label>
+            </div>
+            <div class="remember-forget">
+              <label><input type="checkbox" />remember me</label>
+              <a href="#">Forget Password?</a>
+            </div>
+            <button type="submit" class="btn" id="login-submit">login</button>
+            <div class="login-register">
+              <p>
+                Don't have account?<a href="#" class="register-link"
+                  >Register</a
+                >
+              </p>
+            </div>
+          </form>
+        </div>
+
+        <!-- REGESTER -->
+        <div class="form-box register">
+          <h2>Registration</h2>
+          <form novalidate>
+            <p class="register_alert">Please Register!</p>
+            <div class="input-box">
+              <span class="icon">
+                <i class="fas fa-user"></i>
+              </span>
+              <input type="text" id="usernameRegister" required />
+              <label>Username</label>
+            </div>
+            <div class="input-box">
+              <span class="icon">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input type="email" id="emailRegister" required />
+              <label>Email</label>
+            </div>
+            <div class="input-box">
+              <span class="icon lock">
+                <i class="fas fa-lock"></i>
+              </span>
+              <input type="password" id="passwordRegister" required />
+              <label>Password</label>
+            </div>
+            <div class="remember-forget">
+              <label>
+                <input type="checkbox" class="checkbox" />agree to the terms &
+                conditions
+              </label>
+            </div>
+            <button type="submit" class="btn" id="register-submit">
+              Register
+            </button>
+            <div class="login-register">
+              <p>
+                Already have account?<a href="#" class="login-link">Login</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- js -->
+    <script>
+      // ** Sign Nav **
+      let wrapper = document.querySelector(".wrapper"),
+        loginLink = document.querySelector(".login-link"),
+        registerLink = document.querySelector(".register-link");
+      // ** Sign Register form **
+      let usernameRegister = document.querySelector("#usernameRegister"),
+        emailRegister = document.querySelector("#emailRegister"),
+        passwordRegister = document.querySelector("#passwordRegister"),
+        checkbox = document.querySelector(".checkbox"),
+        registerSubmit = document.querySelector("#register-submit");
+      // ** Sign Login form **
+      let usernameLogin = document.querySelector("#usernameLogin"),
+        passwordLogin = document.querySelector("#passwordLogin"),
+        loginSubmit = document.querySelector("#login-submit");
+      // ** User data from 'DB' **
+      let localUser = localStorage.getItem("username"),
+        localEmail = localStorage.getItem("email"),
+        localPassword = localStorage.getItem("password");
+      // ** Error alert **
+      let loginAlert = document.querySelector(".login_alert"),
+        registerAlert = document.querySelector(".register_alert");
+
+      /* ================================== */
+      /* ============ DOM ============ */
+      /* ================================== */
+      // document.body.style.backgroundImage = "url(./assets/img/BG5.jpg)";
+      // !nav login <==> register
+      registerLink.addEventListener("click", () => {
+        wrapper.classList.add("active");
+      });
+      loginLink.addEventListener("click", () => {
+        wrapper.classList.remove("active");
+      });
+
+      // !show && hid error msg! **
+      function errorAlert(dom, msg, time) {
+        dom.innerHTML = msg;
+        dom.classList.add("active");
+        setTimeout(() => {
+          dom.classList.remove("active");
+        }, time);
+      }
+
+      /* ================================== */
+      /* ============ Register ============ */
+      /* ================================== */
+      // !set new user
+      registerSubmit.addEventListener("click", registration);
+
+      // !stock registre info in local storage
+      function registration(e) {
+        e.preventDefault();
+        if (validRegister()) {
+          localStorage.setItem("username", usernameRegister.value);
+          localStorage.setItem("email", emailRegister.value);
+          localStorage.setItem("password", passwordRegister.value);
+          setTimeout(() => {
+            window.location = "./login.html";
+          }, 1000);
+        }
+      }
+
+      // !check empty inputs fealds
+      function validRegister() {
+        registerAlert.classList.remove("active");
+        if (checkName(usernameRegister.value)) {
+          if (checkMail(emailRegister.value)) {
+            if (checkPass(passwordRegister.value)) {
+              if (checkBoxValid()) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+
+      /* ==== Functions Cheking Input Value Registre ==== */
+      // #function check Username
+      function checkName(username) {
+        if (username === "")
+          errorAlert(registerAlert, "username reaquared!", 3000);
+        else {
+          let validName = /^[a-zA-Z0-9_@]{5,20}$/;
+          if (!validName.test(username))
+            errorAlert(registerAlert, "Username Invalid!", 3000);
+          else return true;
+        }
+      }
+
+      // #function check email
+      function checkMail(email) {
+        if (email === "") errorAlert(registerAlert, "email reaquared!", 3000);
+        else {
+          let validMail =
+            /^(([^<>()[\]\\.,;:\s@\"]+(^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          if (!validMail.test(email))
+            errorAlert(registerAlert, "Email Invalid!", 3000);
+          else return true;
+        }
+      }
+
+      // #function check Password
+      function checkPass(password) {
+        if (password === "")
+          errorAlert(registerAlert, "Password reaquared!", 3000);
+        else {
+          let validPass = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+          if (!validPass.test(password))
+            errorAlert(registerAlert, "Password to week!", 3000);
+          else return true;
+        }
+      }
+
+      // #function check checkbox 'terms & conditions'
+      function checkBoxValid() {
+        if (!checkbox.checked)
+          errorAlert(registerAlert, "Acepter the terms & conditions!", 3000);
+        else return true;
+      }
+
+      /* ================================== */
+      /* ============ login ============ */
+      /* ================================== */
+      // !user login
+      loginSubmit.addEventListener("click", login);
+
+      // !check login info
+      function login(e) {
+        e.preventDefault();
+        if (checkLocalStorage()) {
+          if (checkLogingUser()) {
+            if (checkLogingPass()) {
+              setTimeout(() => {
+                window.location = "./index.html";
+              }, 1000);
+            }
+          }
+        }
+      }
+
+      // !check username && password exist on LocalStorage 'DB'
+      function checkLocalStorage() {
+        if (localUser && localPassword) return true;
+        else errorAlert(loginAlert, "Please Register!", 4500);
+      }
+
+      /* ==== Functions Cheking Input Value Loging ==== */
+      // #check loging username exist && match to DB
+      function checkLogingUser() {
+        if (usernameLogin.value !== "") {
+          if (
+            usernameLogin.value.trim() === localUser.trim() ||
+            usernameLogin.value === localEmail
+          )
+            return true;
+          else errorAlert(loginAlert, "Invalid username!", 4500);
+        } else errorAlert(loginAlert, "username requared!", 2500);
+      }
+
+      // #check loging password exist && match to DB
+      function checkLogingPass() {
+        if ((passwordLogin.value === "") !== "") {
+          if (passwordLogin.value === localPassword) return true;
+          else errorAlert(loginAlert, "Invalid Password!", 4500);
+        } else errorAlert(loginAlert, "Password requared!", 4500);
+      }
+    </script>
+  </body>
+</html>
